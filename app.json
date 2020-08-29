@@ -1,0 +1,12 @@
+{
+  "name": "organizerApp",
+  "displayName": "organizerApp",
+  "expo": {
+    "name": "organizerApp",
+    "slug": "organizerApp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
