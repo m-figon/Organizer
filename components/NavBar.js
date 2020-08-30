@@ -15,15 +15,17 @@ export default function NavBar({navigation}) {
 const styles = StyleSheet.create({
     navbar: {
         flex: 1,
+        height: '100%',
+        width: '100%',
         margin:0,
         flexDirection: 'row',
-        backgroundColor: '#5b6467',
-        backgroundImage: 'linear-gradient(315deg, #5b6467 0%, #8b939a 74%)',
+       // backgroundColor: '#5b6467',
+        //backgroundImage: 'linear-gradient(315deg, #5b6467 0%, #8b939a 74%)',
         alignItems: 'center',
         justifyContent: 'center',
     },
     text: {
-        color: 'white',
+       // color: 'white',
         fontSize: 20
     }
 });
