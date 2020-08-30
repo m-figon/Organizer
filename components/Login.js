@@ -64,15 +64,17 @@ export default class Login extends Component {
 
 const styles = StyleSheet.create({
     login: {
-        paddingHorizontal: '30%',
+        marginVertical: 40,
         flex: 1,
-        paddingTop: '20%',
         justifyContent: 'flex-start',
         alignItems: 'center'
     },
     loginContent: {
+        width:250,
         backgroundColor: 'white',
         borderWidth: 1,
+        paddingHorizontal: 30,
+        paddingVertical:30,
         borderColor: 'gray',
         borderRadius: 5,
         padding: 10,
@@ -81,6 +83,7 @@ const styles = StyleSheet.create({
     },
     inputContent: {
         marginVertical: 20,
+        width: '100%',
         borderBottomWidth: 1,
         borderBottomColor: '#04d387'
     }
