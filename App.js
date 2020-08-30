@@ -7,12 +7,17 @@ import NavBar from './components/NavBar.js';
 import Home from './components/Home.js';
 import Login from './components/Login.js';
 import Register from './components/Register.js';
+import List from './components/List.js';
 
 const Stack = createStackNavigator();
 
 function MyStack() {
   return (
     <Stack.Navigator>
+      <Stack.Screen
+        name="List"
+        component={List}
+        options={{ headerTitle: (navigation) => <NavBar navigation={navigation}/> }} />
       <Stack.Screen
         name="Home"
         component={Home}
