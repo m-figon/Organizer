@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import _, { map } from 'underscore';
 
 export default class List extends Component {
     constructor(props) {
@@ -25,6 +26,12 @@ export default class List extends Component {
                     if (item.account === this.state.logedAc) {
                         this.setState({
                             user: item
+                        }, () => {
+                            let tmpUser = this.state.user;
+                            tmpUser.list = _.sortBy(this.state.user.list, 'hour');
+                            this.setState({
+                                user: tmpUser
+                            })
                         })
                     }
                 }
@@ -35,11 +42,52 @@ export default class List extends Component {
             [type]: e.target.value
         })
     }
-    deleteItem = (item) =>{
+
+    deleteItem = (item) => {
         console.log(item);
         let userData = this.state.user;
-        userData.list.splice(item,1);
+        for(let i=0; i<userData.list.length; i++){
+            if(userData.list[i].id===item){
+                userData.list.splice(i,1);
+            }
+        }
         fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users/' + this.state.user.id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: this.state.user.email,
+                account: this.state.user.account,
+                password: this.state.user.password,
+                list: userData.list,
+                id: this.state.user.id
+            }),
+        }).then(() => {
+            fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users')
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    this.setState({
+                        users: responseJson,
+                        newItem: "",
+                        itemHour: "",
+                    }, () => {
+                        let tmpUser = this.state.user;
+                        tmpUser.list = _.sortBy(this.state.user.list, 'hour');
+                        this.setState({
+                            user: tmpUser
+                        })
+                    })
+                })
+        })
+    }
+    markAsCompleted = (id,value) =>{
+        let tmpUser = this.state.user;
+        for(let item of tmpUser.list){
+            if(item.id===id){
+                item.completed=value;
+                console.log(tmpUser);
+                fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users/' + this.state.user.id, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -48,7 +96,7 @@ export default class List extends Component {
                                 email: this.state.user.email,
                                 account: this.state.user.account,
                                 password: this.state.user.password,
-                                list: userData.list,
+                                list: tmpUser.list,
                                 id: this.state.user.id
                             }),
                         }).then(() => {
@@ -57,11 +105,18 @@ export default class List extends Component {
                                 .then((responseJson) => {
                                     this.setState({
                                         users: responseJson,
-                                        newItem: "",
-                                        itemHour: ""
+                                    }, () => {
+                                        let tmpUser = this.state.user;
+                                        tmpUser.list = _.sortBy(this.state.user.list, 'hour');
+                                        this.setState({
+                                            user: tmpUser
+                                        })
                                     })
                                 })
                         })
+            }
+        }
+
     }
     addItem = () => {
         console.log(!(this.state.newItem.match(/^[a-zA-Z]{4,15}$/) === null));
@@ -77,7 +132,9 @@ export default class List extends Component {
                         updatedList = item.list;
                         updatedList.push({
                             title: this.state.newItem,
-                            hour: this.state.itemHour
+                            hour: this.state.itemHour,
+                            completed: 0,
+                            id: updatedList.length
                         });
                         fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users/' + this.state.user.id, {
                             method: 'PUT',
@@ -99,20 +156,24 @@ export default class List extends Component {
                                         users: responseJson,
                                         newItem: "",
                                         itemHour: ""
+                                    }, () => {
+                                        let tmpUser = this.state.user;
+                                        tmpUser.list = _.sortBy(this.state.user.list, 'hour');
+                                        this.setState({
+                                            user: tmpUser
+                                        })
                                     })
                                 })
                         })
                     })
-
-
                 }
             }
 
-        }else if ((this.state.newItem.match(/^[a-zA-Z]{4,15}$/) === null) && !(this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
+        } else if ((this.state.newItem.match(/^[a-zA-Z]{4,15}$/) === null) && !(this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
             alert('item value must consist of letters and be 4-15 letters long');
-        }else if (!(this.state.newItem.match(/^[a-zA-Z]{4,15}$/) === null) && (this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
+        } else if (!(this.state.newItem.match(/^[a-zA-Z]{4,15}$/) === null) && (this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
             alert('time must be in HH:MM format');
-        }else{
+        } else {
             alert('item value must consist of letters and be 4-15 letters long and time must be in HH:MM format');
         }
     }
@@ -129,14 +190,35 @@ export default class List extends Component {
                             <Text style={styles.addbutton}>Add</Text>
                         </TouchableOpacity>
                         <View style={styles.toDoItems}>
-                            {this.state.user.list.map((item,index) => {
+                            {this.state.user.list.map((item) => {
                                 return (
                                     <View style={styles.line}>
-                                        <Text style={styles.toDoItem1}>{item.title}</Text>
-                                        <Text style={styles.toDoItem2}>{item.hour}</Text>
-                                        <TouchableOpacity onPress={()=>{this.deleteItem(index)}}>
-                                            <AntDesign name="delete" size={24} color="black" />
+                                        <Text style={[
+                        styles.toDoItem1,
+                        item.completed===1 ?
+                            { backgroundColor: '#04d387' }
+                            : { backgroundColor: 'white' }]}>{item.title}</Text>
+                                        <Text style={[
+                        styles.toDoItem2,
+                        item.completed===1 ?
+                            { backgroundColor: '#04d387' }
+                            : { backgroundColor: 'white' }]}>{item.hour}</Text>
+                                        <TouchableOpacity style={[
+                        item.completed===1 ?
+                            { display: 'none' }
+                            : { display: 'flex' }]}onPress={() => { this.markAsCompleted(item.id,1) }}>
+                                            <AntDesign name="check" size={15} color="green" />
                                         </TouchableOpacity>
+                                        <TouchableOpacity style={[
+                        item.completed===1 ?
+                            { display: 'flex' }
+                            : { display: 'none' }]}onPress={() => { this.markAsCompleted(item.id,0) }}>
+                                            <AntDesign name="close" size={15} color="red" />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => { this.deleteItem(item.id) }}>
+                                            <AntDesign name="delete" size={15} color="black" />
+                                        </TouchableOpacity>
+
                                     </View>)
                             })}
                         </View>
