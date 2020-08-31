@@ -11,7 +11,6 @@ export default class List extends Component {
             user: null,
             newItem: "",
             itemHour: "",
-            logedAc: "SlickJoe"
         }
     }
     componentDidMount() {
@@ -23,7 +22,7 @@ export default class List extends Component {
                 })
             }).then(() => {
                 for (let item of this.state.users) {
-                    if (item.account === this.state.logedAc) {
+                    if (item.account === this.props.logedAc) {
                         this.setState({
                             user: item
                         }, () => {
@@ -46,9 +45,9 @@ export default class List extends Component {
     deleteItem = (item) => {
         console.log(item);
         let userData = this.state.user;
-        for(let i=0; i<userData.list.length; i++){
-            if(userData.list[i].id===item){
-                userData.list.splice(i,1);
+        for (let i = 0; i < userData.list.length; i++) {
+            if (userData.list[i].id === item) {
+                userData.list.splice(i, 1);
             }
         }
         fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users/' + this.state.user.id, {
@@ -81,39 +80,39 @@ export default class List extends Component {
                 })
         })
     }
-    markAsCompleted = (id,value) =>{
+    markAsCompleted = (id, value) => {
         let tmpUser = this.state.user;
-        for(let item of tmpUser.list){
-            if(item.id===id){
-                item.completed=value;
+        for (let item of tmpUser.list) {
+            if (item.id === id) {
+                item.completed = value;
                 console.log(tmpUser);
                 fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users/' + this.state.user.id, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                email: this.state.user.email,
-                                account: this.state.user.account,
-                                password: this.state.user.password,
-                                list: tmpUser.list,
-                                id: this.state.user.id
-                            }),
-                        }).then(() => {
-                            fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users')
-                                .then((response) => response.json())
-                                .then((responseJson) => {
-                                    this.setState({
-                                        users: responseJson,
-                                    }, () => {
-                                        let tmpUser = this.state.user;
-                                        tmpUser.list = _.sortBy(this.state.user.list, 'hour');
-                                        this.setState({
-                                            user: tmpUser
-                                        })
-                                    })
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: this.state.user.email,
+                        account: this.state.user.account,
+                        password: this.state.user.password,
+                        list: tmpUser.list,
+                        id: this.state.user.id
+                    }),
+                }).then(() => {
+                    fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users')
+                        .then((response) => response.json())
+                        .then((responseJson) => {
+                            this.setState({
+                                users: responseJson,
+                            }, () => {
+                                let tmpUser = this.state.user;
+                                tmpUser.list = _.sortBy(this.state.user.list, 'hour');
+                                this.setState({
+                                    user: tmpUser
                                 })
+                            })
                         })
+                })
             }
         }
 
@@ -125,7 +124,7 @@ export default class List extends Component {
             let user;
             let updatedList;
             for (let item of this.state.users) {
-                if (item.account === this.state.logedAc) {
+                if (item.account === this.props.logedAc) {
                     this.setState({
                         user: item
                     }, () => {
@@ -178,7 +177,8 @@ export default class List extends Component {
         }
     }
     render() {
-        if (this.state.user) {
+        console.log(this.props.logedAc);
+        if (this.state.user && this.props.logedAc !== "") {
             return (
                 <View style={styles.list}>
                     <View style={styles.listContent}>
@@ -194,25 +194,25 @@ export default class List extends Component {
                                 return (
                                     <View style={styles.line}>
                                         <Text style={[
-                        styles.toDoItem1,
-                        item.completed===1 ?
-                            { backgroundColor: '#04d387' }
-                            : { backgroundColor: 'white' }]}>{item.title}</Text>
+                                            styles.toDoItem1,
+                                            item.completed === 1 ?
+                                                { backgroundColor: '#04d387' }
+                                                : { backgroundColor: 'white' }]}>{item.title}</Text>
                                         <Text style={[
-                        styles.toDoItem2,
-                        item.completed===1 ?
-                            { backgroundColor: '#04d387' }
-                            : { backgroundColor: 'white' }]}>{item.hour}</Text>
+                                            styles.toDoItem2,
+                                            item.completed === 1 ?
+                                                { backgroundColor: '#04d387' }
+                                                : { backgroundColor: 'white' }]}>{item.hour}</Text>
                                         <TouchableOpacity style={[
-                        item.completed===1 ?
-                            { display: 'none' }
-                            : { display: 'flex' }]}onPress={() => { this.markAsCompleted(item.id,1) }}>
+                                            item.completed === 1 ?
+                                                { display: 'none' }
+                                                : { display: 'flex' }]} onPress={() => { this.markAsCompleted(item.id, 1) }}>
                                             <AntDesign name="check" size={15} color="green" />
                                         </TouchableOpacity>
                                         <TouchableOpacity style={[
-                        item.completed===1 ?
-                            { display: 'flex' }
-                            : { display: 'none' }]}onPress={() => { this.markAsCompleted(item.id,0) }}>
+                                            item.completed === 1 ?
+                                                { display: 'flex' }
+                                                : { display: 'none' }]} onPress={() => { this.markAsCompleted(item.id, 0) }}>
                                             <AntDesign name="close" size={15} color="red" />
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={() => { this.deleteItem(item.id) }}>
@@ -227,7 +227,25 @@ export default class List extends Component {
                 </View>
             );
         } else {
-            return (null);
+            return (
+                <View style={styles.list}>
+                    <View style={styles.listContent}>
+                        <Text>User not logged</Text>
+                        <View style={styles.line}>
+                            <Text>To use app</Text>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigation.push('Login')}>
+                            <Text style={styles.green}>Sign in</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.line}>
+                            <Text>Don't have an account?</Text>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigation.push('Register')}>
+                            <Text style={styles.green}>Sign up</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                </View>);
         }
 
     }
@@ -303,5 +321,10 @@ const styles = StyleSheet.create({
     toDoItems: {
         width: '100%',
         marginTop: 20
-    }
+    },
+    green: {
+        color: '#04d387',
+        fontSize: 12,
+        marginHorizontal: 5
+      },
 });

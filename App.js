@@ -11,27 +11,45 @@ import List from './components/List.js';
 
 const Stack = createStackNavigator();
 
-function MyStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="List"
-        component={List}
-        options={{ headerTitle: (navigation) => <NavBar navigation={navigation}/> }} />
-      <Stack.Screen
-        name="Home"
-        component={Home}
-        options={{ headerTitle: (navigation) => <NavBar navigation={navigation}/> }} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Register" component={Register} />
-    </Stack.Navigator>
-  );
-}
-
-export default function App() {
-  return (
-    <NavigationContainer>
-      <MyStack />
-    </NavigationContainer>
-  );
+export default class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      logedAc: ""
+    }
+    this.changeAc = this.changeAc.bind(this);
+  }
+  changeAc(value) {
+    this.setState({
+      logedAc: value
+    })
+  }
+  render() {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator>
+        <Stack.Screen
+            name="Home"
+            options={{ headerTitle: (navigation) => <NavBar navigation={navigation} /> }}>
+            {navigation => <Home navigation={navigation} changeAc={this.changeAc} logedAc={this.state.logedAc} />}
+          </Stack.Screen>
+          <Stack.Screen
+            name="List"
+            options={{ headerTitle: (navigation) => <NavBar navigation={navigation} /> }} >
+            {navigation => <List navigation={navigation} changeAc={this.changeAc} logedAc={this.state.logedAc} />}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Login"
+            options={{ headerTitle: (navigation) => <NavBar navigation={navigation} /> }}>
+            {navigation => <Login navigation={navigation} changeAc={this.changeAc} logedAc={this.state.logedAc} />}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Register"
+            options={{ headerTitle: (navigation) => <NavBar navigation={navigation} /> }}>
+            {navigation => <Register navigation={navigation} changeAc={this.changeAc} logedAc={this.state.logedAc} />}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
 }

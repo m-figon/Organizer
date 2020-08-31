@@ -7,7 +7,7 @@ export default function NavBar({navigation}) {
     }
         return (
             <View style={styles.navbar}>
-                <Text style={styles.text}>Home</Text>
+                <Text style={styles.text}>Organizer App</Text>
             </View>
         );
 }
