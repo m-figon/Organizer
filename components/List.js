@@ -11,6 +11,9 @@ export default class List extends Component {
             user: null,
             newItem: "",
             itemHour: "",
+            startIndex: 0,
+            endIndex: 4,
+            pages: []
         }
     }
     componentDidMount() {
@@ -29,7 +32,20 @@ export default class List extends Component {
                             let tmpUser = this.state.user;
                             tmpUser.list = _.sortBy(this.state.user.list, 'hour');
                             this.setState({
-                                user: tmpUser
+                                user: tmpUser,
+                                pages: []
+                            }, () => {
+                                let num = 0;
+                                for (let item of this.state.user.list) {
+                                    if ((num) % 5 === 0) {
+                                        let tmpPages = this.state.pages;
+                                        tmpPages.push(Math.floor((num) / 5) + 1);
+                                        this.setState({
+                                            pages: tmpPages
+                                        })
+                                    }
+                                    num++;
+                                }
                             })
                         })
                     }
@@ -74,13 +90,46 @@ export default class List extends Component {
                         let tmpUser = this.state.user;
                         tmpUser.list = _.sortBy(this.state.user.list, 'hour');
                         this.setState({
-                            user: tmpUser
+                            user: tmpUser,
+                            pages: []
+                        }, () => {
+                            let num = 0;
+                            for (let item of this.state.user.list) {
+                                if ((num) % 5 === 0) {
+                                    let tmpPages = this.state.pages;
+                                    tmpPages.push(Math.floor((num) / 5) + 1);
+                                    this.setState({
+                                        pages: tmpPages
+                                    })
+                                }
+                                num++;
+                            }
+                            if(this.state.pages.length<=this.state.startIndex/5){
+                                this.changeIndex(this.state.pages.length);
+                            }
                         })
                     })
                 })
         })
     }
     markAsCompleted = (id, value) => {
+        Alert.alert(
+            "Alert Title",
+            "My Alert Msg",
+            [
+              {
+                text: "Ask me later",
+                onPress: () => console.log("Ask me later pressed")
+              },
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+              },
+              { text: "OK", onPress: () => console.log("OK Pressed") }
+            ],
+            { cancelable: false }
+          );
         let tmpUser = this.state.user;
         for (let item of tmpUser.list) {
             if (item.id === id) {
@@ -159,7 +208,20 @@ export default class List extends Component {
                                         let tmpUser = this.state.user;
                                         tmpUser.list = _.sortBy(this.state.user.list, 'hour');
                                         this.setState({
-                                            user: tmpUser
+                                            user: tmpUser,
+                                            pages: []
+                                        }, () => {
+                                            let num = 0;
+                                            for (let item of this.state.user.list) {
+                                                if ((num) % 5 === 0) {
+                                                    let tmpPages = this.state.pages;
+                                                    tmpPages.push(Math.floor((num) / 5) + 1);
+                                                    this.setState({
+                                                        pages: tmpPages
+                                                    })
+                                                }
+                                                num++;
+                                            }
                                         })
                                     })
                                 })
@@ -176,6 +238,12 @@ export default class List extends Component {
             alert('item value must consist of letters and be 4-15 letters long and time must be in HH:MM format');
         }
     }
+    changeIndex(value){
+        this.setState({
+            startIndex: 0+5*(value-1),
+            endIndex: 4+5*(value-1)
+        })
+    }
     render() {
         console.log(this.props.logedAc);
         if (this.state.user && this.props.logedAc !== "") {
@@ -189,38 +257,53 @@ export default class List extends Component {
                         <TouchableOpacity onPress={() => this.addItem()} style={styles.addbutton}>
                             <Text style={styles.addbutton}>Add</Text>
                         </TouchableOpacity>
+                    </View>
+                    <View style={styles.listContent}>
+                        <Text style={styles.userTitle}>{this.props.logedAc}'s To Do List</Text>
                         <View style={styles.toDoItems}>
-                            {this.state.user.list.map((item) => {
-                                return (
-                                    <View style={styles.line}>
-                                        <Text style={[
-                                            styles.toDoItem1,
-                                            item.completed === 1 ?
-                                                { backgroundColor: '#04d387' }
-                                                : { backgroundColor: 'white' }]}>{item.title}</Text>
-                                        <Text style={[
-                                            styles.toDoItem2,
-                                            item.completed === 1 ?
-                                                { backgroundColor: '#04d387' }
-                                                : { backgroundColor: 'white' }]}>{item.hour}</Text>
-                                        <TouchableOpacity style={[
-                                            item.completed === 1 ?
-                                                { display: 'none' }
-                                                : { display: 'flex' }]} onPress={() => { this.markAsCompleted(item.id, 1) }}>
-                                            <AntDesign name="check" size={15} color="green" />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={[
-                                            item.completed === 1 ?
-                                                { display: 'flex' }
-                                                : { display: 'none' }]} onPress={() => { this.markAsCompleted(item.id, 0) }}>
-                                            <AntDesign name="close" size={15} color="red" />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => { this.deleteItem(item.id) }}>
-                                            <AntDesign name="delete" size={15} color="black" />
-                                        </TouchableOpacity>
+                            {this.state.user.list.map((item, key) => {
+                                if (key >= this.state.startIndex && key <= this.state.endIndex) {
+                                    return (
+                                        <View style={styles.line}>
+                                            <Text style={[
+                                                styles.toDoItem1,
+                                                item.completed === 1 ?
+                                                    { backgroundColor: '#04d387' }
+                                                    : { backgroundColor: 'white' }]}>{item.title}</Text>
+                                            <Text style={[
+                                                styles.toDoItem2,
+                                                item.completed === 1 ?
+                                                    { backgroundColor: '#04d387' }
+                                                    : { backgroundColor: 'white' }]}>{item.hour}</Text>
+                                            <TouchableOpacity style={[
+                                                item.completed === 1 ?
+                                                    { display: 'none' }
+                                                    : { display: 'flex' }]} onPress={() => { this.markAsCompleted(item.id, 1) }}>
+                                                <AntDesign name="check" size={15} color="green" />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={[
+                                                item.completed === 1 ?
+                                                    { display: 'flex' }
+                                                    : { display: 'none' }]} onPress={() => { this.markAsCompleted(item.id, 0) }}>
+                                                <AntDesign name="close" size={15} color="red" />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => { this.deleteItem(item.id) }}>
+                                                <AntDesign name="delete" size={15} color="black" />
+                                            </TouchableOpacity>
 
-                                    </View>)
+                                        </View>)
+                                }
+
                             })}
+                            <View style={styles.pagesLine}>
+                                {this.state.pages.map((item) => {
+                                    return (
+                                        <TouchableOpacity onPress={()=>this.changeIndex(item)}>
+                                        <Text style={styles.page}>{item}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                })}
+                            </View>
                         </View>
                     </View>
 
@@ -234,13 +317,13 @@ export default class List extends Component {
                         <View style={styles.line}>
                             <Text>To use app</Text>
                             <TouchableOpacity onPress={() => this.props.navigation.navigation.push('Login')}>
-                            <Text style={styles.green}>Sign in</Text>
+                                <Text style={styles.green}>Sign in</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={styles.line}>
                             <Text>Don't have an account?</Text>
                             <TouchableOpacity onPress={() => this.props.navigation.navigation.push('Register')}>
-                            <Text style={styles.green}>Sign up</Text>
+                                <Text style={styles.green}>Sign up</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -263,6 +346,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
+    pagesLine: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        marginTop: 10
+    },
+    page: {
+        marginLeft: 5,
+        fontSize: 20,
+        color: "#04d387"
+    },
     listContent: {
         width: 300,
         backgroundColor: 'white',
@@ -273,7 +368,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         justifyContent: 'center',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        marginBottom: 15
     },
     inputContent1: {
         marginVertical: 20,
@@ -326,5 +422,9 @@ const styles = StyleSheet.create({
         color: '#04d387',
         fontSize: 12,
         marginHorizontal: 5
-      },
+    },
+    userTitle: {
+        fontSize: 20,
+        marginVertical: 10
+    }
 });
