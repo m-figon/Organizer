@@ -113,23 +113,6 @@ export default class List extends Component {
         })
     }
     markAsCompleted = (id, value) => {
-        Alert.alert(
-            "Alert Title",
-            "My Alert Msg",
-            [
-                {
-                    text: "Ask me later",
-                    onPress: () => console.log("Ask me later pressed")
-                },
-                {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel"
-                },
-                { text: "OK", onPress: () => console.log("OK Pressed") }
-            ],
-            { cancelable: false }
-        );
         let tmpUser = this.state.user;
         for (let item of tmpUser.list) {
             if (item.id === id) {
@@ -167,9 +150,9 @@ export default class List extends Component {
 
     }
     addItem = () => {
-        console.log(!(this.state.newItem.match(/^[a-zA-Z]{4,15}$/) === null));
+        console.log(!(this.state.newItem.match(/^[A-Za-z\s]{4,30}$/) === null));
         console.log(!(this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null));
-        if (!(this.state.newItem.match(/^[a-zA-Z]{4,15}$/) === null) && !(this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
+        if (!(this.state.newItem.match(/^[A-Za-z\s]{4,30}$/) === null) && !(this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
             let user;
             let updatedList;
             for (let item of this.state.users) {
@@ -230,12 +213,19 @@ export default class List extends Component {
                 }
             }
 
-        } else if ((this.state.newItem.match(/^[a-zA-Z]{4,15}$/) === null) && !(this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
-            alert('item value must consist of letters and be 4-15 letters long');
-        } else if (!(this.state.newItem.match(/^[a-zA-Z]{4,15}$/) === null) && (this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
-            alert('time must be in HH:MM format');
-        } else {
-            alert('item value must consist of letters and be 4-15 letters long and time must be in HH:MM format');
+        } else if ((this.state.newItem.match(/^[A-Za-z\s]{4,30}$/) === null) && !(this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
+            Alert.alert('Wrong Data', 'Item value must consist of letters and be 4-30 letters long', [
+                { text: 'Understood', onPress: () => console.log('item value must consist of letters and be 4-20 letters long') }
+            ])
+        } else if (!(this.state.newItem.match(/^[A-Za-z\s]{4,30}$/) === null) && (this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
+            Alert.alert('Wrong Data', 'Time must be in HH:MM format', [
+                { text: 'Understood', onPress: () => console.log('item value must consist of letters and be 4-30 letters long') }
+            ])
+        }
+        else if ((this.state.newItem.match(/^[A-Za-z\s]{4,30}$/) === null) && (this.state.itemHour.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/) === null)) {
+            Alert.alert('Wrong Data', 'Time must be in HH:MM format', [
+                { text: 'Understood', onPress: () => console.log('item value must consist of letters and be 4-30 letters long') }
+            ])
         }
     }
     deleteAlert(item){
@@ -298,16 +288,16 @@ export default class List extends Component {
                                                 item.completed === 1 ?
                                                     { display: 'none' }
                                                     : { display: 'flex' }]} onPress={() => { this.markAsCompleted(item.id, 1) }}>
-                                                <AntDesign name="check" size={15} color="green" />
+                                                <AntDesign name="check" size={20} color="green" />
                                             </TouchableOpacity>
                                             <TouchableOpacity style={[
                                                 item.completed === 1 ?
                                                     { display: 'flex' }
                                                     : { display: 'none' }]} onPress={() => { this.markAsCompleted(item.id, 0) }}>
-                                                <AntDesign name="close" size={15} color="red" />
+                                                <AntDesign name="close" size={20} color="red" />
                                             </TouchableOpacity>
-                                            <TouchableOpacity onPress={() => { this.deleteAlert(item.id) }}>
-                                                <AntDesign name="delete" size={15} color="black" />
+                                            <TouchableOpacity style={styles.distance} onPress={() => { this.deleteAlert(item.id) }}>
+                                                <AntDesign name="delete" size={20} color="black" />
                                             </TouchableOpacity>
 
                                         </View>)
@@ -408,16 +398,14 @@ const styles = StyleSheet.create({
     addbutton: {
         backgroundColor: '#04d387',
         width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        paddingLeft: '25%',
         paddingVertical: 3,
         color: 'white',
         borderRadius: 2
     },
     toDoItem1: {
         marginVertical: 5,
-        width: '75%',
+        width: '60%',
         marginRight: '2.5%',
         padding: 5,
         borderWidth: 1,
@@ -445,5 +433,8 @@ const styles = StyleSheet.create({
     userTitle: {
         fontSize: 20,
         marginVertical: 10
+    },
+    distance: {
+        marginHorizontal: 5
     }
 });

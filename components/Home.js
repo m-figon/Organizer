@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0,0.3)",
   },
   logedText: {
-          position: 'relative',
+    position: 'relative',
     marginVertical: -300,
     flexDirection: 'column',
     width: 150,
