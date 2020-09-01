@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
 
 export default class Register extends Component {
@@ -17,61 +17,65 @@ export default class Register extends Component {
             password2Show: false
         }
     }
-    settingState = (type,value) =>{
+    settingState = (type, value) => {
         this.setState({
             [type]: value
         })
     }
-    changeInput = (e, type) => {
+    settingInput = (value, type) => {
         this.setState({
-            [type]: e.target.value
+            [type]: value
         })
     }
     registerFunc = () => {
+        console.log(this.state.email);
+        console.log(this.state.email);
+        console.log(this.state.email);
+        console.log(this.state.email);
+
         let registerFlag = true;
         if (
-            !(
-                this.state.email.match(/^[a-z0-9\._\-]+@[a-z0-9\.\-]+\.[a-z]{2,4}$/) ===
+            !(this.state.email.match(/^[a-z0-9\._\-]+@[a-z0-9\.\-]+\.[a-z]{2,4}$/) ===
                 null
             )
         ) {
-            this.settingState('emailShow',false);
-        }else{
-            this.settingState('emailShow',true);
-            registerFlag=false;
+            this.settingState('emailShow', false);
+        } else {
+            this.settingState('emailShow', true);
+            registerFlag = false;
         }
-        if(
+        if (
             !(this.state.account.match(/^[a-zA-Z0-9\.\-_]{4,10}$/) === null)
-        ){
-            this.settingState('accountShow',false);
-        }else{
-            this.settingState('accountShow',true);
-            registerFlag=false;
+        ) {
+            this.settingState('accountShow', false);
+        } else {
+            this.settingState('accountShow', true);
+            registerFlag = false;
         }
-        if(
+        if (
             !(
                 this.state.password.match(
                     /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\.\-_@$!%*#?&])[A-Za-z\d\.\-_@$!%*#?&]{8,13}$/
                 ) === null
             )
-        ){
-            this.settingState('passwordShow',false);
-        }else{
-            this.settingState('passwordShow',true);
-            registerFlag=false;
+        ) {
+            this.settingState('passwordShow', false);
+        } else {
+            this.settingState('passwordShow', true);
+            registerFlag = false;
         }
-        if(
+        if (
             this.state.password === this.state.password2 &&
             !(
                 this.state.password.match(
                     /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\.\-_@$!%*#?&])[A-Za-z\d\.\-_@$!%*#?&]{8,13}$/
                 ) === null
             )
-        ){
-            this.settingState('password2Show',false);
-        }else{
-            this.settingState('password2Show',true);
-            registerFlag=false;
+        ) {
+            this.settingState('password2Show', false);
+        } else {
+            this.settingState('password2Show', true);
+            registerFlag = false;
         }
         if (registerFlag) {
             fetch("https://rocky-citadel-32862.herokuapp.com/Organizer/users", {
@@ -86,56 +90,59 @@ export default class Register extends Component {
                     "Content-type": "application/json; charset=UTF-8",
                 },
             });
-            alert("New user created");
+            Alert.alert('New user created', 'Correct user data', [
+                { text: 'Understood', onPress: () => console.log('alert closed') }
+            ])
         }
     }
     render() {
         return (
-            <View style={styles.login}>
-                <View style={styles.loginContent}>
-                    <Text>Email</Text>
-                    <TextInput placeholder="Enter Email Address" onChange={(e) => this.changeInput(e, 'email')} style={styles.inputContent}></TextInput>
-                    <Text style={[
-                        styles.warning,
-                        this.state.emailShow ?
-                            { display: 'flex' }
-                            : { display: 'none' }]} > Please enter correct email</Text>
-                    <Text>Account</Text>
-                    <TextInput placeholder="Enter Account Name" onChange={(e) => this.changeInput(e, 'account')} style={styles.inputContent}></TextInput>
-                    <Text style={[
-                        styles.warning,
-                        this.state.accountShow ?
-                            { display: 'flex' }
-                            : { display: 'none' }]} >Account name must be 4-10 letters or digits</Text>
-                    <Text>Password</Text>
-                    <TextInput placeholder="Enter Password" secureTextEntry={true} onChange={(e) => this.changeInput(e, 'password')} style={styles.inputContent}></TextInput>
-                    <Text style={[
-                        styles.warning,
-                        this.state.passwordShow ?
-                            { display: 'flex' }
-                            : { display: 'none' }]} >Password name must be 8-13 characters, at least one upper and lower case letter, special sign, a digit</Text>
-                    <Text>Confirm Password</Text>
-                    <TextInput placeholder="Confirm Password" secureTextEntry={true} onChange={(e) => this.changeInput(e, 'password2')} style={styles.inputContent}></TextInput>
-                    <Text style={[
-                        styles.warning,
-                        this.state.password2Show ?
-                            { display: 'flex' }
-                            : { display: 'none' }]} >Password must be correct and same as password confirmation</Text>
-                    <Button onPress={() => this.registerFunc()} title="Register" color="#04d387"></Button>
+            <ScrollView>
+                <View style={styles.login}>
+                    <View style={styles.loginContent}>
+                        <Text>Email</Text>
+                        <TextInput placeholder="Enter Email Address" onChangeText={(value) => this.settingInput(value, 'email')} style={styles.inputContent}></TextInput>
+                        <Text style={[
+                            styles.warning,
+                            this.state.emailShow ?
+                                { display: 'flex' }
+                                : { display: 'none' }]} > Please enter correct email</Text>
+                        <Text>Account</Text>
+                        <TextInput placeholder="Enter Account Name" onChangeText={(value) => this.settingInput(value, 'account')} style={styles.inputContent}></TextInput>
+                        <Text style={[
+                            styles.warning,
+                            this.state.accountShow ?
+                                { display: 'flex' }
+                                : { display: 'none' }]} >Account name must be 4-10 letters or digits</Text>
+                        <Text>Password</Text>
+                        <TextInput placeholder="Enter Password" secureTextEntry={true} onChangeText={(value) => this.settingInput(value, 'password')} style={styles.inputContent}></TextInput>
+                        <Text style={[
+                            styles.warning,
+                            this.state.passwordShow ?
+                                { display: 'flex' }
+                                : { display: 'none' }]} >Password name must be 8-13 characters, at least one upper and lower case letter, special sign, a digit</Text>
+                        <Text>Confirm Password</Text>
+                        <TextInput placeholder="Confirm Password" secureTextEntry={true} onChangeText={(value) => this.settingInput(value, 'password2')} style={styles.inputContent}></TextInput>
+                        <Text style={[
+                            styles.warning,
+                            this.state.password2Show ?
+                                { display: 'flex' }
+                                : { display: 'none' }]} >Password must be correct and same as password confirmation</Text>
+                        <Button onPress={() => this.registerFunc()} title="Register" color="#04d387"></Button>
+                    </View>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }
 
 const styles = StyleSheet.create({
     login: {
-        marginVertical: 40,
-        flex: 1,
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: 'center'
     },
     loginContent: {
+        marginVertical: 50,
         width: 250,
         backgroundColor: 'white',
         borderWidth: 1,

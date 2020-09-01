@@ -52,9 +52,9 @@ export default class List extends Component {
                 }
             })
     }
-    changeInput = (e, type) => {
+    changeInput = (value, type) => {
         this.setState({
-            [type]: e.target.value
+            [type]: value
         })
     }
 
@@ -104,7 +104,7 @@ export default class List extends Component {
                                 }
                                 num++;
                             }
-                            if(this.state.pages.length<=this.state.startIndex/5){
+                            if (this.state.pages.length <= this.state.startIndex / 5) {
                                 this.changeIndex(this.state.pages.length);
                             }
                         })
@@ -117,19 +117,19 @@ export default class List extends Component {
             "Alert Title",
             "My Alert Msg",
             [
-              {
-                text: "Ask me later",
-                onPress: () => console.log("Ask me later pressed")
-              },
-              {
-                text: "Cancel",
-                onPress: () => console.log("Cancel Pressed"),
-                style: "cancel"
-              },
-              { text: "OK", onPress: () => console.log("OK Pressed") }
+                {
+                    text: "Ask me later",
+                    onPress: () => console.log("Ask me later pressed")
+                },
+                {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                { text: "OK", onPress: () => console.log("OK Pressed") }
             ],
             { cancelable: false }
-          );
+        );
         let tmpUser = this.state.user;
         for (let item of tmpUser.list) {
             if (item.id === id) {
@@ -238,10 +238,25 @@ export default class List extends Component {
             alert('item value must consist of letters and be 4-15 letters long and time must be in HH:MM format');
         }
     }
-    changeIndex(value){
+    deleteAlert(item){
+        Alert.alert(
+            "Deleting Item",
+            "Are you sure u want to delete this item?",
+            [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+              },
+              { text: "OK", onPress: () => this.deleteItem(item) }
+            ],
+            { cancelable: false }
+          ); 
+    }
+    changeIndex(value) {
         this.setState({
-            startIndex: 0+5*(value-1),
-            endIndex: 4+5*(value-1)
+            startIndex: 0 + 5 * (value - 1),
+            endIndex: 4 + 5 * (value - 1)
         })
     }
     render() {
@@ -251,14 +266,18 @@ export default class List extends Component {
                 <View style={styles.list}>
                     <View style={styles.listContent}>
                         <View style={styles.line}>
-                            <TextInput style={styles.inputContent1} onChange={(e) => this.changeInput(e, 'newItem')} value={this.state.newItem} placeholder="Add new item"></TextInput>
-                            <TextInput style={styles.inputContent2} onChange={(e) => this.changeInput(e, 'itemHour')} value={this.state.itemHour} placeholder="00:00"></TextInput>
+                            <TextInput style={styles.inputContent1} onChangeText={(value) => this.changeInput(value, 'newItem')} value={this.state.newItem} placeholder="Add new item"></TextInput>
+                            <TextInput style={styles.inputContent2} onChangeText={(value) => this.changeInput(value, 'itemHour')} value={this.state.itemHour} placeholder="00:00"></TextInput>
                         </View>
                         <TouchableOpacity onPress={() => this.addItem()} style={styles.addbutton}>
                             <Text style={styles.addbutton}>Add</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.listContent}>
+                    <View style={[
+                        styles.listContent,
+                        this.state.user.list.length === 0 ?
+                            { display: 'none' }
+                            : { display: 'flex' }]} >
                         <Text style={styles.userTitle}>{this.props.logedAc}'s To Do List</Text>
                         <View style={styles.toDoItems}>
                             {this.state.user.list.map((item, key) => {
@@ -287,7 +306,7 @@ export default class List extends Component {
                                                     : { display: 'none' }]} onPress={() => { this.markAsCompleted(item.id, 0) }}>
                                                 <AntDesign name="close" size={15} color="red" />
                                             </TouchableOpacity>
-                                            <TouchableOpacity onPress={() => { this.deleteItem(item.id) }}>
+                                            <TouchableOpacity onPress={() => { this.deleteAlert(item.id) }}>
                                                 <AntDesign name="delete" size={15} color="black" />
                                             </TouchableOpacity>
 
@@ -298,8 +317,8 @@ export default class List extends Component {
                             <View style={styles.pagesLine}>
                                 {this.state.pages.map((item) => {
                                     return (
-                                        <TouchableOpacity onPress={()=>this.changeIndex(item)}>
-                                        <Text style={styles.page}>{item}</Text>
+                                        <TouchableOpacity onPress={() => this.changeIndex(item)}>
+                                            <Text style={styles.page}>{item}</Text>
                                         </TouchableOpacity>
                                     )
                                 })}
