@@ -89,61 +89,73 @@ export default class Register extends Component {
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
                 },
+            }).then(() => {
+                Alert.alert('New user created', 'Correct user data', [
+                    {
+                        text: 'Understood', onPress: () => this.setState({
+                            account: "",
+                            email: "",
+                            password: "",
+                            password2: "",
+                            emailShow: false,
+                            accountShow: false,
+                            passwordShow: false,
+                            password2Show: false
+                        })
+                    }
+                ])
+
             });
-            Alert.alert('New user created', 'Correct user data', [
-                { text: 'Understood', onPress: () => console.log('alert closed') }
-            ])
+
         }
     }
     render() {
         return (
-            <ScrollView>
-                <View style={styles.login}>
-                    <View style={styles.loginContent}>
-                        <Text>Email</Text>
-                        <TextInput placeholder="Enter Email Address" onChangeText={(value) => this.settingInput(value, 'email')} style={styles.inputContent}></TextInput>
-                        <Text style={[
-                            styles.warning,
-                            this.state.emailShow ?
-                                { display: 'flex' }
-                                : { display: 'none' }]} > Please enter correct email</Text>
-                        <Text>Account</Text>
-                        <TextInput placeholder="Enter Account Name" onChangeText={(value) => this.settingInput(value, 'account')} style={styles.inputContent}></TextInput>
-                        <Text style={[
-                            styles.warning,
-                            this.state.accountShow ?
-                                { display: 'flex' }
-                                : { display: 'none' }]} >Account name must be 4-10 letters or digits</Text>
-                        <Text>Password</Text>
-                        <TextInput placeholder="Enter Password" secureTextEntry={true} onChangeText={(value) => this.settingInput(value, 'password')} style={styles.inputContent}></TextInput>
-                        <Text style={[
-                            styles.warning,
-                            this.state.passwordShow ?
-                                { display: 'flex' }
-                                : { display: 'none' }]} >Password name must be 8-13 characters, at least one upper and lower case letter, special sign, a digit</Text>
-                        <Text>Confirm Password</Text>
-                        <TextInput placeholder="Confirm Password" secureTextEntry={true} onChangeText={(value) => this.settingInput(value, 'password2')} style={styles.inputContent}></TextInput>
-                        <Text style={[
-                            styles.warning,
-                            this.state.password2Show ?
-                                { display: 'flex' }
-                                : { display: 'none' }]} >Password must be correct and same as password confirmation</Text>
-                        <Button onPress={() => this.registerFunc()} title="Register" color="#04d387"></Button>
-                    </View>
+            <View style={styles.login}>
+                <View style={styles.loginContent}>
+                    <Text>Email</Text>
+                    <TextInput placeholder="Enter Email Address" value={this.state.email} onChangeText={(value) => this.settingInput(value, 'email')} style={styles.inputContent}></TextInput>
+                    <Text style={[
+                        styles.warning,
+                        this.state.emailShow ?
+                            { display: 'flex' }
+                            : { display: 'none' }]} > Please enter correct email</Text>
+                    <Text>Account</Text>
+                    <TextInput placeholder="Enter Account Name" value={this.state.account} onChangeText={(value) => this.settingInput(value, 'account')} style={styles.inputContent}></TextInput>
+                    <Text style={[
+                        styles.warning,
+                        this.state.accountShow ?
+                            { display: 'flex' }
+                            : { display: 'none' }]} >Account name must be 4-10 letters or digits</Text>
+                    <Text>Password</Text>
+                    <TextInput placeholder="Enter Password" value={this.state.password} secureTextEntry={true} onChangeText={(value) => this.settingInput(value, 'password')} style={styles.inputContent}></TextInput>
+                    <Text style={[
+                        styles.warning,
+                        this.state.passwordShow ?
+                            { display: 'flex' }
+                            : { display: 'none' }]} >Password name must be 8-13 characters, at least one upper and lower case letter, special sign, a digit</Text>
+                    <Text>Confirm Password</Text>
+                    <TextInput placeholder="Confirm Password" value={this.state.password2} secureTextEntry={true} onChangeText={(value) => this.settingInput(value, 'password2')} style={styles.inputContent}></TextInput>
+                    <Text style={[
+                        styles.warning,
+                        this.state.password2Show ?
+                            { display: 'flex' }
+                            : { display: 'none' }]} >Password must be correct and same as password confirmation</Text>
+                    <Button onPress={() => this.registerFunc()} title="Register" color="#04d387"></Button>
                 </View>
-            </ScrollView>
+            </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
     login: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
     },
     loginContent: {
-        marginVertical: 50,
-        width: 250,
+        width: 300,
         backgroundColor: 'white',
         borderWidth: 1,
         paddingHorizontal: 30,
@@ -155,13 +167,13 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start'
     },
     inputContent: {
-        marginVertical: 20,
+        marginVertical: 7,
         borderBottomWidth: 1,
         width: '100%',
         borderBottomColor: '#04d387'
     },
     warning: {
         color: 'red',
-        marginBottom: 30
+        marginBottom: 7
     },
 });

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Image, Button, TouchableOpacity, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import _, { map } from 'underscore';
-
+import loading from './loading.gif';
 export default class List extends Component {
     constructor(props) {
         super(props);
@@ -12,8 +12,10 @@ export default class List extends Component {
             newItem: "",
             itemHour: "",
             startIndex: 0,
-            endIndex: 4,
-            pages: []
+            endIndex: 3,
+            pages: [],
+            loaded: false,
+            firstAdd: true
         }
     }
     componentDidMount() {
@@ -33,13 +35,14 @@ export default class List extends Component {
                             tmpUser.list = _.sortBy(this.state.user.list, 'hour');
                             this.setState({
                                 user: tmpUser,
+                                loaded: true,
                                 pages: []
                             }, () => {
                                 let num = 0;
                                 for (let item of this.state.user.list) {
-                                    if ((num) % 5 === 0) {
+                                    if ((num) % 4 === 0) {
                                         let tmpPages = this.state.pages;
-                                        tmpPages.push(Math.floor((num) / 5) + 1);
+                                        tmpPages.push(Math.floor((num) / 4) + 1);
                                         this.setState({
                                             pages: tmpPages
                                         })
@@ -95,16 +98,16 @@ export default class List extends Component {
                         }, () => {
                             let num = 0;
                             for (let item of this.state.user.list) {
-                                if ((num) % 5 === 0) {
+                                if ((num) % 4 === 0) {
                                     let tmpPages = this.state.pages;
-                                    tmpPages.push(Math.floor((num) / 5) + 1);
+                                    tmpPages.push(Math.floor((num) / 4) + 1);
                                     this.setState({
                                         pages: tmpPages
                                     })
                                 }
                                 num++;
                             }
-                            if (this.state.pages.length <= this.state.startIndex / 5) {
+                            if (this.state.pages.length <= this.state.startIndex / 4) {
                                 this.changeIndex(this.state.pages.length);
                             }
                         })
@@ -196,15 +199,24 @@ export default class List extends Component {
                                         }, () => {
                                             let num = 0;
                                             for (let item of this.state.user.list) {
-                                                if ((num) % 5 === 0) {
+                                                if ((num) % 4 === 0) {
                                                     let tmpPages = this.state.pages;
-                                                    tmpPages.push(Math.floor((num) / 5) + 1);
+                                                    tmpPages.push(Math.floor((num) / 4) + 1);
                                                     this.setState({
                                                         pages: tmpPages
                                                     })
                                                 }
                                                 num++;
                                             }
+                                        }, () => {
+                                            if (this.state.firstAdd) {
+                                                this.setState({
+                                                    startIndex: 0 + 4 * (0),
+                                                    endIndex: 3 + 4 * (0),
+                                                    firstAdd: false
+                                                })
+                                            }
+
                                         })
                                     })
                                 })
@@ -228,30 +240,39 @@ export default class List extends Component {
             ])
         }
     }
-    deleteAlert(item){
+    deleteAlert(item) {
         Alert.alert(
             "Deleting Item",
             "Are you sure u want to delete this item?",
             [
-              {
-                text: "Cancel",
-                onPress: () => console.log("Cancel Pressed"),
-                style: "cancel"
-              },
-              { text: "OK", onPress: () => this.deleteItem(item) }
+                {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                { text: "OK", onPress: () => this.deleteItem(item) }
             ],
             { cancelable: false }
-          ); 
+        );
     }
     changeIndex(value) {
         this.setState({
-            startIndex: 0 + 5 * (value - 1),
-            endIndex: 4 + 5 * (value - 1)
+            startIndex: 0 + 4 * (value - 1),
+            endIndex: 3 + 4 * (value - 1)
         })
     }
     render() {
-        console.log(this.props.logedAc);
-        if (this.state.user && this.props.logedAc !== "") {
+        console.log(this.state.loaded);
+        if (!this.state.loaded) {
+            return (
+                <View style={styles.screen}>
+                    <View style={styles.loadingScreen}>
+                        <Image style={styles.loadingImage} source={loading} />
+                    </View>
+                </View>
+            );
+        }
+        else if (this.state.user && this.props.logedAc !== "") {
             return (
                 <View style={styles.list}>
                     <View style={styles.listContent}>
@@ -277,13 +298,13 @@ export default class List extends Component {
                                             <Text style={[
                                                 styles.toDoItem1,
                                                 item.completed === 1 ?
-                                                    { backgroundColor: '#04d387' }
-                                                    : { backgroundColor: 'white' }]}>{item.title}</Text>
+                                                    { backgroundColor: '#04d387', color: "white" }
+                                                    : { backgroundColor: 'white', color: "black" }]}>{item.title}</Text>
                                             <Text style={[
                                                 styles.toDoItem2,
                                                 item.completed === 1 ?
-                                                    { backgroundColor: '#04d387' }
-                                                    : { backgroundColor: 'white' }]}>{item.hour}</Text>
+                                                    { backgroundColor: '#04d387', color: "white"  }
+                                                    : { backgroundColor: 'white', color: "black"  }]}>{item.hour}</Text>
                                             <TouchableOpacity style={[
                                                 item.completed === 1 ?
                                                     { display: 'none' }
@@ -315,7 +336,6 @@ export default class List extends Component {
                             </View>
                         </View>
                     </View>
-
                 </View>
             );
         } else {
@@ -350,6 +370,25 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center'
     },
+    screen: {
+        width: '100%',
+        height: '100%'
+    },
+    loadingScreen: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        backgroundColor: 'white',
+        top: 0,
+        left: 0,
+        zIndex: 10
+    },
+    loadingImage: {
+        width: 50,
+        height: 50
+    },
     line: {
         display: 'flex',
         flexDirection: 'row',
@@ -372,7 +411,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderWidth: 1,
         paddingHorizontal: 30,
-        paddingVertical: 30,
+        paddingVertical: 20,
         borderColor: 'gray',
         borderRadius: 5,
         padding: 10,
