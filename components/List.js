@@ -275,67 +275,67 @@ export default class List extends Component {
         else if (this.state.user && this.props.logedAc !== "") {
             return (
                 <View style={styles.list}>
-                    <View style={styles.listContent}>
-                        <View style={styles.line}>
-                            <TextInput style={styles.inputContent1} onChangeText={(value) => this.changeInput(value, 'newItem')} value={this.state.newItem} placeholder="Add new item"></TextInput>
-                            <TextInput style={styles.inputContent2} onChangeText={(value) => this.changeInput(value, 'itemHour')} value={this.state.itemHour} placeholder="00:00"></TextInput>
+                        <View style={styles.listContent}>
+                            <View style={styles.line}>
+                                <TextInput style={styles.inputContent1} onChangeText={(value) => this.changeInput(value, 'newItem')} value={this.state.newItem} placeholder="Add new item"></TextInput>
+                                <TextInput style={styles.inputContent2} onChangeText={(value) => this.changeInput(value, 'itemHour')} value={this.state.itemHour} placeholder="00:00"></TextInput>
+                            </View>
+                            <TouchableOpacity onPress={() => this.addItem()} style={styles.addbutton}>
+                                <Text style={styles.addbutton}>Add</Text>
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity onPress={() => this.addItem()} style={styles.addbutton}>
-                            <Text style={styles.addbutton}>Add</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={[
-                        styles.listContent,
-                        this.state.user.list.length === 0 ?
-                            { display: 'none' }
-                            : { display: 'flex' }]} >
-                        <Text style={styles.userTitle}>{this.props.logedAc}'s To Do List</Text>
-                        <View style={styles.toDoItems}>
-                            {this.state.user.list.map((item, key) => {
-                                if (key >= this.state.startIndex && key <= this.state.endIndex) {
-                                    return (
-                                        <View style={styles.line}>
-                                            <Text style={[
-                                                styles.toDoItem1,
-                                                item.completed === 1 ?
-                                                    { backgroundColor: '#04d387', color: "white" }
-                                                    : { backgroundColor: 'white', color: "black" }]}>{item.title}</Text>
-                                            <Text style={[
-                                                styles.toDoItem2,
-                                                item.completed === 1 ?
-                                                    { backgroundColor: '#04d387', color: "white"  }
-                                                    : { backgroundColor: 'white', color: "black"  }]}>{item.hour}</Text>
-                                            <TouchableOpacity style={[
-                                                item.completed === 1 ?
-                                                    { display: 'none' }
-                                                    : { display: 'flex' }]} onPress={() => { this.markAsCompleted(item.id, 1) }}>
-                                                <AntDesign name="check" size={20} color="green" />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity style={[
-                                                item.completed === 1 ?
-                                                    { display: 'flex' }
-                                                    : { display: 'none' }]} onPress={() => { this.markAsCompleted(item.id, 0) }}>
-                                                <AntDesign name="close" size={20} color="red" />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity style={styles.distance} onPress={() => { this.deleteAlert(item.id) }}>
-                                                <AntDesign name="delete" size={20} color="black" />
-                                            </TouchableOpacity>
+                        <View style={[
+                            styles.listContent,
+                            this.state.user.list.length === 0 ?
+                                { display: 'none' }
+                                : { display: 'flex' }]} >
+                            <Text style={styles.userTitle}>{this.props.logedAc}'s To Do List</Text>
+                            <View style={styles.toDoItems}>
+                                {this.state.user.list.map((item, key) => {
+                                    if (key >= this.state.startIndex && key <= this.state.endIndex) {
+                                        return (
+                                            <View style={styles.line}>
+                                                <Text style={[
+                                                    styles.toDoItem1,
+                                                    item.completed === 1 ?
+                                                        { backgroundColor: '#04d387', color: "white" }
+                                                        : { backgroundColor: 'white', color: "black" }]}>{item.title}</Text>
+                                                <Text style={[
+                                                    styles.toDoItem2,
+                                                    item.completed === 1 ?
+                                                        { backgroundColor: '#04d387', color: "white" }
+                                                        : { backgroundColor: 'white', color: "black" }]}>{item.hour}</Text>
+                                                <TouchableOpacity style={[
+                                                    item.completed === 1 ?
+                                                        { display: 'none' }
+                                                        : { display: 'flex' }]} onPress={() => { this.markAsCompleted(item.id, 1) }}>
+                                                    <AntDesign name="check" size={20} color="green" />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[
+                                                    item.completed === 1 ?
+                                                        { display: 'flex' }
+                                                        : { display: 'none' }]} onPress={() => { this.markAsCompleted(item.id, 0) }}>
+                                                    <AntDesign name="close" size={20} color="red" />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={styles.distance} onPress={() => { this.deleteAlert(item.id) }}>
+                                                    <AntDesign name="delete" size={20} color="black" />
+                                                </TouchableOpacity>
 
-                                        </View>)
-                                }
+                                            </View>)
+                                    }
 
-                            })}
-                            <View style={styles.pagesLine}>
-                                {this.state.pages.map((item) => {
-                                    return (
-                                        <TouchableOpacity onPress={() => this.changeIndex(item)}>
-                                            <Text style={styles.page}>{item}</Text>
-                                        </TouchableOpacity>
-                                    )
                                 })}
+                                <View style={styles.pagesLine}>
+                                    {this.state.pages.map((item) => {
+                                        return (
+                                            <TouchableOpacity onPress={() => this.changeIndex(item)}>
+                                                <Text style={styles.page}>{item}</Text>
+                                            </TouchableOpacity>
+                                        )
+                                    })}
+                                </View>
                             </View>
                         </View>
-                    </View>
                 </View>
             );
         } else {

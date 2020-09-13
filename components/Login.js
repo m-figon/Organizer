@@ -1,41 +1,31 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
 
 
-export default class Login extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            users: null,
-            account: "",
-            password: ""
-        }
-    }
-    componentDidMount() {
+export default function Login(props) {
+    const [users, setUsers] = useState(null);
+    const [inputs, setInputs] = useState({
+        account: "",
+        password: ""
+    });
+    useEffect(()=>{
         fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users')
             .then((response) => response.json())
             .then((responseJson) => {
-                this.setState({
-                    users: responseJson
-                })
+                setUsers(responseJson);
             })
-    }
-    changeInput = (value, type) => {
-        this.setState({
-            [type]: value
-        })
-    }
-    loginFunc = () => {
-        console.log(this.state.users);
-        console.log(this.state.account);
-        console.log(this.state.password);
-        if (this.state.users) {
+    },[])
+    const loginFunc = () => {
+        console.log(inputs.users);
+        console.log(inputs.account);
+        console.log(inputs.password);
+        if (users) {
             let correctFlag = false;
-            for (let item of this.state.users) {
-                if (this.state.account === item.account && this.state.password === item.password) {
+            for (let item of users) {
+                if (inputs.account === item.account && inputs.password === item.password) {
                     correctFlag = true;
-                    this.props.changeAc(this.state.account);
-                    this.props.navigation.navigation.push('Home');
+                    props.changeAc(inputs.account);
+                    props.navigation.navigation.push('Home');
                     Alert.alert('You loged', 'Correct user data', [
                         { text: 'Understood', onPress: () => console.log('alert closed') }
                     ])
@@ -49,19 +39,17 @@ export default class Login extends Component {
         }
 
     }
-    render() {
         return (
             <View style={styles.login}>
                 <View style={styles.loginContent}>
                     <Text>Account</Text>
-                    <TextInput placeholder="Enter Account Name" onChangeText={(value) => this.changeInput(value, 'account')} style={styles.inputContent}></TextInput>
+                    <TextInput placeholder="Enter Account Name" onChangeText={(value) => setInputs({ ...inputs, account: value})} style={styles.inputContent}></TextInput>
                     <Text>Password</Text>
-                    <TextInput placeholder="Enter Password" secureTextEntry={true} onChangeText={(value) => this.changeInput(value, 'password')} style={styles.inputContent}></TextInput>
-                    <Button onPress={() => this.loginFunc()} title="Login" color="#04d387"></Button>
+                    <TextInput placeholder="Enter Password" secureTextEntry={true} onChangeText={(value) => setInputs({ ...inputs, password: value})} style={styles.inputContent}></TextInput>
+                    <Button onPress={() => loginFunc()} title="Login" color="#04d387"></Button>
                 </View>
             </View>
         );
-    }
 }
 
 const styles = StyleSheet.create({
