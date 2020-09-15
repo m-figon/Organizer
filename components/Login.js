@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
 
 
@@ -8,11 +8,14 @@ export default function Login(props) {
         account: "",
         password: ""
     });
+      const inputElement = useRef(null);
+
     useEffect(()=>{
         fetch('https://rocky-citadel-32862.herokuapp.com/Organizer/users')
             .then((response) => response.json())
             .then((responseJson) => {
                 setUsers(responseJson);
+                inputElement.current.focus();
             })
     },[])
     const loginFunc = () => {
@@ -43,7 +46,7 @@ export default function Login(props) {
             <View style={styles.login}>
                 <View style={styles.loginContent}>
                     <Text>Account</Text>
-                    <TextInput placeholder="Enter Account Name" onChangeText={(value) => setInputs({ ...inputs, account: value})} style={styles.inputContent}></TextInput>
+                    <TextInput ref={inputElement} placeholder="Enter Account Name" onChangeText={(value) => setInputs({ ...inputs, account: value})} style={styles.inputContent}></TextInput>
                     <Text>Password</Text>
                     <TextInput placeholder="Enter Password" secureTextEntry={true} onChangeText={(value) => setInputs({ ...inputs, password: value})} style={styles.inputContent}></TextInput>
                     <Button onPress={() => loginFunc()} title="Login" color="#04d387"></Button>
